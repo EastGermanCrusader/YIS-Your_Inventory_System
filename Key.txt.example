@@ -1,0 +1,5 @@
+# Veraltet – bitte token.txt verwenden (siehe token.txt.example).
+# Falls du noch Key.txt nutzt, extrahiert der Build das Token daraus.
+# Empfohlen: npm run setup && nur token.txt pflegen.
+
+MEIN_GEHEIMER_TOKEN=DEIN_GEHEIMES_TOKEN_HIER

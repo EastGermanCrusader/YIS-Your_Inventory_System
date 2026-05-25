@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="YIS – Your Inventory System">
+  <meta name="robots" content="noindex, nofollow">
+  <title>YIS – Your Inventory System</title>
+  <link rel="icon" href="L-W_Monogramm_n.b.png" type="image/png">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/splash.css">
+</head>
+<body>
+  <div id="splash-screen" class="splash-screen" aria-live="polite" aria-busy="true">
+    <audio id="splash-audio" class="splash-audio" src="loading.mp3" preload="auto"></audio>
+    <div class="splash-bg" aria-hidden="true"></div>
+    <div class="splash-content">
+      <div class="splash-logo-wrap">
+        <img src="L-W_Monogramm_n.b.png" alt="YIS Logo" width="52" height="52">
+      </div>
+      <h1 class="splash-title">YIS</h1>
+      <p class="splash-tagline">Your Inventory System</p>
+      <div class="splash-loader-wrap" id="splash-loader"></div>
+      <p class="splash-status" id="splash-status">System wird geladen…</p>
+      <div class="splash-progress" aria-hidden="true">
+        <div class="splash-progress-bar" id="splash-progress-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="app-root" class="app-root app-root--waiting">
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-logo-wrap">
+        <img src="L-W_Monogramm_n.b.png" alt="YIS Logo" width="34" height="34">
+      </div>
+      <div>
+        <h1>YIS</h1>
+        <span>Your Inventory System</span>
+      </div>
+    </div>
+    <nav class="nav-tabs" role="tablist">
+      <button type="button" class="tab-btn active" data-view="public" id="tab-public">Öffentliche Ansicht</button>
+      <button type="button" class="tab-btn locked" data-view="edit" id="tab-edit">Bearbeitung</button>
+      <button type="button" class="btn btn-ghost btn-error-log" id="btn-error-log" title="Fehlerprotokoll">
+        Fehler
+        <span class="error-log-badge" id="error-log-badge" hidden>0</span>
+      </button>
+      <button type="button" class="btn btn-ghost" id="btn-login" hidden>Anmelden</button>
+      <button type="button" class="btn btn-ghost" id="btn-logout" hidden>Abmelden</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Öffentliche Ansicht: nur Lesen -->
+    <section id="view-public" class="view-panel active" aria-label="Öffentliche Ansicht">
+      <div class="stats-row" id="public-stats"></div>
+      <div class="toolbar" id="public-toolbar">
+        <input type="search" class="search-input" id="public-search" placeholder="Suche nach Bezeichnung, Seriennummer, Standort…" autocomplete="off" hidden>
+      </div>
+      <div id="public-items" class="items-grid"></div>
+      <p id="public-empty" class="empty-state" hidden>Keine Gegenstände gefunden.</p>
+    </section>
+
+    <!-- Bearbeitungsansicht: Login erforderlich -->
+    <section id="view-edit" class="view-panel" aria-label="Bearbeitungsansicht">
+      <p class="session-bar" id="session-info" hidden>Bearbeitungsmodus aktiv</p>
+      <div class="stats-row" id="edit-stats"></div>
+      <div class="toolbar">
+        <input type="search" class="search-input" id="edit-search" placeholder="Inventar durchsuchen…" autocomplete="off">
+        <button type="button" class="btn btn-primary" id="btn-new-item">+ Neuer Gegenstand</button>
+      </div>
+      <div id="edit-items" class="items-grid"></div>
+      <p id="edit-empty" class="empty-state" hidden>Noch keine Akten vorhanden.</p>
+    </section>
+  </main>
+
+  <footer class="footer-note">YIS · Your Inventory System · Daten via Google Tabellen</footer>
+
+  <!-- Login -->
+  <div class="modal-overlay" id="login-modal" role="dialog" aria-labelledby="login-title">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="login-title">Anmeldung Bearbeitung</h2>
+        <button type="button" class="modal-close" data-close="login-modal" aria-label="Schließen">&times;</button>
+      </div>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-password">Zugangsschlüssel</label>
+          <input type="password" id="login-password" required autocomplete="current-password" placeholder="Bearbeitungs-Passwort">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" data-close="login-modal">Abbrechen</button>
+          <button type="submit" class="btn btn-primary">Anmelden</button>
+        </div>
+        <p class="login-hint">Nur autorisierte Nutzer können Gegenstände anlegen und ändern.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Akte anlegen / bearbeiten -->
+  <div class="modal-overlay" id="form-modal" role="dialog">
+    <div class="modal wide">
+      <div class="modal-header">
+        <h2 id="form-title">Neue Akte</h2>
+        <button type="button" class="modal-close" data-close="form-modal" aria-label="Schließen">&times;</button>
+      </div>
+      <form id="item-form">
+        <input type="hidden" id="form-serial" name="seriennummer">
+        <div class="form-group">
+          <label for="form-bezeichnung">Bezeichnung *</label>
+          <input type="text" id="form-bezeichnung" required maxlength="200">
+        </div>
+        <div class="form-group">
+          <label for="form-beschreibung">Beschreibung</label>
+          <textarea id="form-beschreibung" maxlength="2000"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="form-kategorie">Kategorie</label>
+          <select id="form-kategorie">
+            <option value="Allgemein">Allgemein</option>
+            <option value="Werkzeug">Werkzeug</option>
+            <option value="Elektronik">Elektronik</option>
+            <option value="Material">Material</option>
+            <option value="Fahrzeug">Fahrzeug</option>
+            <option value="Sonstiges">Sonstiges</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="form-standort">Standort / Lagerplatz</label>
+          <input type="text" id="form-standort" maxlength="120">
+        </div>
+        <div class="form-group" id="form-status-group" hidden>
+          <label for="form-status">Status</label>
+          <select id="form-status">
+            <option value="Aktiv">Aktiv</option>
+            <option value="In Reparatur">In Reparatur</option>
+            <option value="Ausgeliehen">Ausgeliehen</option>
+            <option value="Archiviert">Archiviert</option>
+          </select>
+        </div>
+        <p class="login-hint" id="form-serial-preview"></p>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" data-close="form-modal">Abbrechen</button>
+          <button type="submit" class="btn btn-primary" id="form-submit">Akte speichern</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Akte Detail (Seriennummer + QR) -->
+  <div class="modal-overlay" id="akte-modal" role="dialog">
+    <div class="modal wide">
+      <div class="modal-header">
+        <h2 id="akte-title">Akte</h2>
+        <button type="button" class="modal-close" data-close="akte-modal" aria-label="Schließen">&times;</button>
+      </div>
+      <div class="akte-layout">
+        <div class="akte-details" id="akte-details"></div>
+        <div class="qr-box">
+          <div id="akte-qr" class="qr-canvas-wrap" aria-label="QR-Code"></div>
+          <p class="serial-label" id="akte-serial-label"></p>
+          <button type="button" class="btn btn-secondary" id="btn-download-qr" style="margin-top:0.5rem;width:100%">QR herunterladen</button>
+        </div>
+      </div>
+      <section class="akte-anlagen">
+        <div class="akte-anlagen-header">
+          <h3 class="akte-anlagen-title">Anlagen</h3>
+          <label class="btn btn-secondary btn-upload" id="akte-upload-label" hidden>
+            + Datei hochladen
+            <input type="file" id="akte-file-input" multiple hidden accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.txt,.rtf,.odt,.ods,.odp,.zip,.7z,.rar,.mp3,.wav,.ogg,.m4a,.mp4,.webm,.mov,.avi">
+          </label>
+        </div>
+        <div class="akte-upload-hint">
+          <p>Dateien werden in der Google-Tabelle gespeichert (max. 1,5 MB pro Datei).</p>
+          <p class="akte-formate-title">Unterstützte Formate:</p>
+          <ul class="akte-formate-list">
+            <li><strong>Bilder:</strong> JPG, JPEG, PNG, GIF, WebP, SVG, BMP, ICO</li>
+            <li><strong>Dokumente:</strong> PDF, DOC, DOCX, TXT, RTF, ODT</li>
+            <li><strong>Tabellen:</strong> XLS, XLSX, CSV, ODS</li>
+            <li><strong>Präsentationen:</strong> PPT, PPTX, ODP</li>
+            <li><strong>Archive:</strong> ZIP, 7Z, RAR, TAR, GZ</li>
+            <li><strong>Audio:</strong> MP3, WAV, OGG, M4A</li>
+            <li><strong>Video:</strong> MP4, WebM, MOV, AVI</li>
+          </ul>
+          <p class="akte-formate-note">Weitere Dateitypen sind möglich, sofern sie unter 1,5 MB bleiben.</p>
+        </div>
+        <div id="akte-files-list" class="akte-files-list">
+          <p class="akte-files-empty">Keine Dateien vorhanden.</p>
+        </div>
+      </section>
+      <div class="form-actions" id="akte-actions" hidden>
+        <button type="button" class="btn btn-secondary" id="btn-edit-item">Bearbeiten</button>
+        <button type="button" class="btn btn-danger" id="btn-delete-item">Akte entfernen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fehlerprotokoll (Debug) -->
+  <div class="modal-overlay" id="error-log-modal" role="dialog" aria-labelledby="error-log-title">
+    <div class="modal wide error-log-modal">
+      <div class="modal-header">
+        <h2 id="error-log-title">Fehlerprotokoll</h2>
+        <button type="button" class="modal-close" data-close="error-log-modal" aria-label="Schließen">&times;</button>
+      </div>
+      <p class="login-hint">Vergangene Fehler für Debugging. Bleibt in dieser Browser-Sitzung gespeichert.</p>
+      <div class="error-log-toolbar">
+        <button type="button" class="btn btn-primary" id="btn-error-copy-all">Alles kopieren</button>
+        <button type="button" class="btn btn-secondary" id="btn-error-clear">Protokoll leeren</button>
+      </div>
+      <p class="error-log-copy-hint" id="error-log-copy-hint" hidden></p>
+      <div class="error-log-scroll">
+        <div id="error-log-list" class="error-log-list"></div>
+        <p id="error-log-empty" class="empty-state">Noch keine Fehler erfasst.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+  </div>
+
+  <script src="js/splash.js"></script>
+  <script src="js/ui-sounds.js"></script>
+  <script src="js/errors.js"></script>
+  <script src="js/vendor/qrcode.min.js"></script>
+  <script src="js/shield.js"></script>
+  <script src="js/app.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "yis",
+  "private": true,
+  "scripts": {
+    "setup": "node tools/setup-config.js",
+    "build": "node tools/sync-deploy-docs.js && node tools/build-shield.js && node tools/build-app.js",
+    "sync-deploy": "node tools/sync-deploy-docs.js",
+    "shield": "node tools/build-shield.js",
+    "check-secrets": "node tools/check-no-secrets.js"
+  }
+}

@@ -1,0 +1,18 @@
+# Geheimnisse – niemals auf GitHub pushen
+Key.txt
+token.txt
+url.txt
+Bereitstellungs-ID.txt
+.env
+.env.local
+
+# Lokal / nicht für GitHub Pages
+anurati-free-font.zip
+L-W_Monogramm.jpg
+logo.png
+fonts/
+
+# Build / System
+node_modules/
+.DS_Store
+*.log
