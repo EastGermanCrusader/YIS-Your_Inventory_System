@@ -510,6 +510,71 @@ main {
   }
 }
 
+/* Mobiler Abgesicherten-Modus (QR-Scan auf Mobilgeräten) */
+#akte-modal.akte-mobile-secured .qr-box,
+#akte-modal.akte-mobile-secured #btn-download-qr,
+#akte-modal.akte-mobile-secured .akte-upload-hint,
+#akte-modal.akte-mobile-secured #akte-upload-label,
+#akte-modal.akte-mobile-secured #akte-actions {
+  display: none !important;
+}
+
+#akte-modal.akte-mobile-secured .akte-layout {
+  grid-template-columns: 1fr;
+}
+
+#akte-modal.akte-mobile-secured .modal.wide {
+  max-width: none;
+  width: calc(100vw - 1rem);
+  max-height: calc(100dvh - 1rem);
+  margin: 0.5rem auto;
+  overflow-y: auto;
+}
+
+#akte-modal.akte-mobile-secured .akte-details dl {
+  gap: 0.65rem;
+}
+
+#akte-modal.akte-mobile-secured .akte-details dt {
+  font-size: 0.7rem;
+}
+
+#akte-modal.akte-mobile-secured .akte-details dd {
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+#akte-modal.akte-mobile-secured .akte-anlagen {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+}
+
+#akte-modal.akte-mobile-secured .akte-files-list {
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.65rem;
+}
+
+#akte-modal.akte-mobile-secured .akte-file-actions a,
+#akte-modal.akte-mobile-secured .akte-file-actions button {
+  min-height: 2.25rem;
+  padding: 0.45rem 0.65rem;
+}
+
+@media (max-width: 640px) {
+  #akte-modal.akte-mobile-secured.open {
+    padding: 0.25rem;
+    align-items: flex-start;
+  }
+
+  #akte-modal.akte-mobile-secured .modal-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--surface);
+    padding-bottom: 0.5rem;
+  }
+}
+
 .akte-details {
   font-family: var(--font-akte);
 }
