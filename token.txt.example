@@ -1,4 +1,8 @@
+# English version below
 # Kopieren nach token.txt (npm run setup) und eigenes Geheimnis setzen.
 # Mindestens 24 Zeichen, zufällig. Muss exakt mit MEIN_GEHEIMER_TOKEN in App.gs übereinstimmen.
 # Gleichzeitig Login-Passwort der Bearbeitungsansicht.
+# Copy to token.txt (npm run setup) and set your own secret.
+# At least 24 random characters. Must match MEIN_GEHEIMER_TOKEN in App.gs exactly.
+# Also used as the login password for edit mode.
 DEIN_GEHEIMES_TOKEN_HIER

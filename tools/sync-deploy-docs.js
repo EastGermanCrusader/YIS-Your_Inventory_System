@@ -43,6 +43,27 @@ Dieser Ordner ist die **statische Website** für GitHub Pages.
 **Pages-Einstellung:** Branch \`main\`, Ordner **\`/deploy\`**.
 
 \`js/shield.js\` ist ein **Platzhalter**. Für deine API im Repository-Root: \`npm run build\` (konfigurierte Version nicht committen).
+
+---
+
+## Contents of this folder (GitHub Pages)
+
+This folder is the **static website** for GitHub Pages.
+
+| File / folder | Purpose |
+|---------------|---------|
+| \`index.html\` | Application entry point |
+| \`demo.gif\` | UI demo recording |
+| \`.nojekyll\` | Disable Jekyll on Pages |
+| \`LICENSE\` | MIT license |
+| \`SETUP.md\` | Setup guide for your instance |
+| \`SECURITY.md\` | Security notes |
+| \`css/\`, \`js/\` | Frontend assets |
+| \`*.mp3\`, \`preview_Logo.png\` | Audio and logo |
+
+**Pages setting:** branch \`main\`, folder **\`/deploy\`**.
+
+\`js/shield.js\` is a **placeholder**. For your API, run \`npm run build\` in the repository root (do not commit a configured build).
 `;
 
 const readmeSrc = path.join(ROOT, 'README.md');

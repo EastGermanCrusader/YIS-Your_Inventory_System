@@ -1,5 +1,9 @@
+# English version below
 # Veraltet — bitte token.txt verwenden (siehe token.txt.example).
 # Falls Key.txt noch existiert, kann der Build das Token daraus lesen.
 # Empfohlen: npm run setup && nur token.txt pflegen.
+# Deprecated — use token.txt (see token.txt.example).
+# If Key.txt still exists, the build may read the token from it.
+# Recommended: npm run setup && maintain token.txt only.
 
 MEIN_GEHEIMER_TOKEN=DEIN_GEHEIMES_TOKEN_HIER

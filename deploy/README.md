@@ -23,14 +23,12 @@ Open-Source-**Inventarsystem** mit statischem Web-Frontend, Google Tabellen als 
 git clone https://github.com/EastGermanCrusader/YIS-Your_Inventory_System.git
 cd YIS-Your_Inventory_System
 npm run setup
-# token.txt, url.txt, Bereitstellungs-ID.txt und App.gs ausfüllen — siehe SETUP.md
+# Vorlagen (*.example) ausfüllen und App.gs anpassen — siehe SETUP.md
 npm run build
 ./serve.sh
 ```
 
 Browser: **http://127.0.0.1:8080** (nicht per `file://` öffnen).
-
-**Lokale Arbeitskopie mit Geheimnissen:** Ordner `privat/` (wird nicht auf GitHub gepusht). Einrichtung: `npm run sync-privat`, dann `cd privat && ./serve.sh`.
 
 **Ausführliche Anleitung:** [SETUP.md](SETUP.md)
 
@@ -39,36 +37,40 @@ Browser: **http://127.0.0.1:8080** (nicht per `file://` öffnen).
 | Pfad | Zweck |
 |------|--------|
 | `deploy/` | Statische Website für [GitHub Pages](https://pages.github.com/) |
-| `demo.gif` | Demo-Aufnahme der Anwendung |
-| `js/app.js` | Frontend-Quellcode (Entwicklung) |
+| `deploy/index.html` | Einstieg der Web-App |
+| `demo.gif` | Demo-Aufnahme |
+| `deploy/preview_Logo.png` | Logo |
+| `deploy/css/` | Stylesheets |
+| `deploy/js/` | Frontend (inkl. `shield.stub.js`, `app.min.js`) |
+| `js/app.js` | Frontend-Quellcode |
 | `google-apps-script/App.gs` | Backend (in Google bereitstellen) |
-| `tools/` | Build und Konfiguration |
-| `*.example` | Vorlagen ohne Geheimnisse |
-| `token.txt`, `url.txt`, … | **Nur lokal** — in `.gitignore` |
+| `tools/` | Build-Skripte (`build-app.js`, `build-shield.js`, …) |
+| `token.txt.example` | Vorlage API-/Login-Passwort |
+| `url.txt.example` | Vorlage Web-App-URL |
+| `Bereitstellungs-ID.txt.example` | Vorlage Bereitstellungs-ID |
+| `package.json` | npm-Skripte (`setup`, `build`, `check-secrets`, …) |
+| `serve.sh` | Lokaler Testserver |
 
 ## GitHub Pages
 
-Der Ordner **`deploy/`** enthält die komplette Website sowie die Dokumentation (`README.md`, `LICENSE`, `SETUP.md`, `SECURITY.md`).
+Der Ordner **`deploy/`** enthält Website und Kopien der Dokumentation (`README.md`, `LICENSE`, `SETUP.md`, `SECURITY.md`).
 
-1. Vor dem Push: `npm run check-secrets`
+1. Vor dem Push: `npm run check-secrets` (siehe `tools/check-no-secrets.js`)
 2. Repository pushen
 3. **Settings → Pages → Branch `main`, Ordner `/deploy`**
-4. Dokumentation aktualisieren: `npm run sync-deploy` (läuft auch bei `npm run build`)
-5. Eigene Instanz: `npm run build` lokal — gebaute `shield.js` mit echten Werten **nicht** committen
+4. Dokumentation aktualisieren: `npm run sync-deploy` (auch Teil von `npm run build`)
 
-`deploy/js/shield.js` enthält nach dem Build eine verschlüsselte API-URL (AES-256-GCM). Im Repository liegt standardmäßig nur ein Platzhalter; jede Installation baut ihre eigene Version.
+Im Repository liegt `deploy/js/shield.stub.js` als Platzhalter. `npm run build` erzeugt über `tools/build-shield.js` eine instanzspezifische `deploy/js/shield.js` (AES-256-GCM).
 
 ## Sicherheit
 
-| Ebene | Beschreibung |
-|--------|----------------|
-| **Token** | Schützt `list`, Schreibvorgänge und Uploads (`token.txt` = `App.gs`) |
-| **Öffentlich** | Nur `get?sn=…` und Dateiabruf mit gültiger Seriennummer |
-| **shield.js** | API-URL verschlüsselt; Entschlüsselung nach Anmeldung |
+| Ebene | Datei im Repository | Beschreibung |
+|--------|---------------------|----------------|
+| **Token** | `token.txt.example`, `google-apps-script/App.gs` | Gleicher Wert in beiden nach dem Setup |
+| **Öffentlich** | `google-apps-script/App.gs` | Nur `get?sn=…` und Dateiabruf mit Seriennummer |
+| **shield.js** | `deploy/js/shield.stub.js` | Platzhalter; Build über `tools/build-shield.js` |
 
 Details: [SECURITY.md](SECURITY.md)
-
-**Niemals** `token.txt`, `url.txt`, `Key.txt` oder ein konfiguriertes `shield.js` ins öffentliche Repository legen.
 
 ## Lizenz
 
@@ -76,7 +78,7 @@ Details: [SECURITY.md](SECURITY.md)
 
 ## Beitragen
 
-Forks und Pull Requests sind willkommen. Bitte keine echten Tokens, URLs oder Schlüssel in Commits.
+Forks und Pull Requests sind willkommen. Keine echten Geheimnisse in `google-apps-script/App.gs`, `deploy/js/shield.js` oder anderen getrackten Dateien.
 
 ---
 
@@ -105,14 +107,12 @@ Open-source **inventory management** with a static web frontend, Google Sheets a
 git clone https://github.com/EastGermanCrusader/YIS-Your_Inventory_System.git
 cd YIS-Your_Inventory_System
 npm run setup
-# Fill in token.txt, url.txt, Bereitstellungs-ID.txt and App.gs — see SETUP.md
+# Fill in *.example templates and edit App.gs — see SETUP.md
 npm run build
 ./serve.sh
 ```
 
 Open **http://127.0.0.1:8080** in your browser (do not use `file://`).
-
-**Local copy with secrets:** use the `privat/` folder (not pushed to GitHub). Run `npm run sync-privat`, then `cd privat && ./serve.sh`.
 
 **Full setup guide:** [SETUP.md](SETUP.md)
 
@@ -121,36 +121,40 @@ Open **http://127.0.0.1:8080** in your browser (do not use `file://`).
 | Path | Purpose |
 |------|---------|
 | `deploy/` | Static site for [GitHub Pages](https://pages.github.com/) |
-| `demo.gif` | Application demo recording |
-| `js/app.js` | Frontend source (development) |
+| `deploy/index.html` | Web app entry point |
+| `demo.gif` | Demo recording |
+| `deploy/preview_Logo.png` | Logo |
+| `deploy/css/` | Stylesheets |
+| `deploy/js/` | Frontend (incl. `shield.stub.js`, `app.min.js`) |
+| `js/app.js` | Frontend source |
 | `google-apps-script/App.gs` | Backend (deploy in Google) |
-| `tools/` | Build and configuration |
-| `*.example` | Templates without secrets |
-| `token.txt`, `url.txt`, … | **Local only** — listed in `.gitignore` |
+| `tools/` | Build scripts (`build-app.js`, `build-shield.js`, …) |
+| `token.txt.example` | API/login password template |
+| `url.txt.example` | Web app URL template |
+| `Bereitstellungs-ID.txt.example` | Deployment ID template |
+| `package.json` | npm scripts (`setup`, `build`, `check-secrets`, …) |
+| `serve.sh` | Local test server |
 
 ## GitHub Pages
 
-The **`deploy/`** folder contains the full website and documentation (`README.md`, `LICENSE`, `SETUP.md`, `SECURITY.md`).
+The **`deploy/`** folder contains the site and copies of the docs (`README.md`, `LICENSE`, `SETUP.md`, `SECURITY.md`).
 
-1. Before pushing: `npm run check-secrets`
+1. Before pushing: `npm run check-secrets` (see `tools/check-no-secrets.js`)
 2. Push the repository
 3. **Settings → Pages → Branch `main`, folder `/deploy`**
-4. Refresh docs in deploy: `npm run sync-deploy` (also runs on `npm run build`)
-5. For your instance: run `npm run build` locally — do **not** commit a configured `shield.js`
+4. Refresh deploy docs: `npm run sync-deploy` (also runs in `npm run build`)
 
-After build, `deploy/js/shield.js` holds an encrypted API URL (AES-256-GCM). The public repo ships a placeholder; each operator builds their own file.
+The repo includes `deploy/js/shield.stub.js` as a placeholder. `npm run build` uses `tools/build-shield.js` to produce an instance-specific `deploy/js/shield.js` (AES-256-GCM).
 
 ## Security
 
-| Layer | Description |
-|-------|-------------|
-| **Token** | Protects `list`, writes, and uploads (`token.txt` = `App.gs`) |
-| **Public** | Only `get?sn=…` and file access with a valid serial number |
-| **shield.js** | Encrypted API URL; decrypted after login |
+| Layer | File in repository | Description |
+|-------|-------------------|-------------|
+| **Token** | `token.txt.example`, `google-apps-script/App.gs` | Same value in both after setup |
+| **Public** | `google-apps-script/App.gs` | Only `get?sn=…` and file access with serial number |
+| **shield.js** | `deploy/js/shield.stub.js` | Placeholder; build via `tools/build-shield.js` |
 
 Details: [SECURITY.md](SECURITY.md)
-
-Never commit `token.txt`, `url.txt`, `Key.txt`, or a configured `shield.js` to a public repository.
 
 ## License
 
@@ -158,7 +162,7 @@ Never commit `token.txt`, `url.txt`, `Key.txt`, or a configured `shield.js` to a
 
 ## Contributing
 
-Forks and pull requests are welcome. Do not include real tokens, URLs, or keys in commits.
+Forks and pull requests are welcome. Do not put real secrets in tracked files such as `google-apps-script/App.gs` or `deploy/js/shield.js`.
 
 ---
 
@@ -180,3 +184,24 @@ Dieser Ordner ist die **statische Website** für GitHub Pages.
 **Pages-Einstellung:** Branch `main`, Ordner **`/deploy`**.
 
 `js/shield.js` ist ein **Platzhalter**. Für deine API im Repository-Root: `npm run build` (konfigurierte Version nicht committen).
+
+---
+
+## Contents of this folder (GitHub Pages)
+
+This folder is the **static website** for GitHub Pages.
+
+| File / folder | Purpose |
+|---------------|---------|
+| `index.html` | Application entry point |
+| `demo.gif` | UI demo recording |
+| `.nojekyll` | Disable Jekyll on Pages |
+| `LICENSE` | MIT license |
+| `SETUP.md` | Setup guide for your instance |
+| `SECURITY.md` | Security notes |
+| `css/`, `js/` | Frontend assets |
+| `*.mp3`, `preview_Logo.png` | Audio and logo |
+
+**Pages setting:** branch `main`, folder **`/deploy`**.
+
+`js/shield.js` is a **placeholder**. For your API, run `npm run build` in the repository root (do not commit a configured build).
