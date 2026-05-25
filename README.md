@@ -1,65 +1,58 @@
 # YIS – Your Inventory System
 
-Open-Source **Inventarsystem**: HTML-Frontend, Google Tabellen als Datenbank, [Google Apps Script](https://developers.google.com/apps-script) als API.
-
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![Plattform](https://img.shields.io/badge/Plattform-Web-orange.svg)
+![Backend](https://img.shields.io/badge/Backend-Google%20Sheets-green.svg)
 
-## Funktionen
+YIS ist ein leichtgewichtiges, webbasiertes **Inventar- und Lagersystem**, das maximale Flexibilität mit minimalem Infrastruktur-Aufwand kombiniert. Es nutzt ein modernes HTML5/JS-Frontend und verwendet eine **Google Tabelle als serverlose, kostenlose Datenbank**. Die Kommunikation erfolgt sicher über eine maßgeschneiderte Google Apps Script API.
 
-- **Öffentliche Ansicht**: Akte per QR / Link `?sn=SERIENNUMMER` (ohne Login)
-- **Bearbeitung** (mit Passwort): Inventar pflegen, Seriennummern (`YIS-YYYYMMDD-0001`), QR-Codes
-- **Anlagen** pro Akte (bis 1,5 MB, in Tabellenblatt „Anlagen“)
-- UI-Sounds, Splash-Screen, Fehlerprotokoll
+![YIS System Demonstration](demo.gif)
 
-## Schnellstart (eigene Instanz)
+---
 
+## 🚀 Kernfunktionen
+
+* **Öffentliche Schnellansicht (Scan & Go):** Direkter Aufruf digitaler Objektakten via QR-Code oder dedizierter URL-Parameter (`?sn=SERIENNUMMER`) – komplett ohne vorherigen Login.
+* **Autonomes Daten-Seeding:** Das Frontend initialisiert und strukturiert die Google Tabelle beim ersten Start vollautomatisch. Es sind keine manuellen SQL- oder Tabellen-Setups nötig.
+* **Sichere Verwaltung:** Passwortgeschützter Administrationsbereich zur Pflege des Inventars, Generierung standardisierter Seriennummern (`YIS-YYYYMMDD-0001`) und Erstellung von QR-Codes.
+* **Integrierte Dateianlagen:** Direkter Upload von Dokumenten oder Bildern (bis zu 1,5 MB) pro Objekt, die isoliert im Tabellenblatt „Anlagen“ hinterlegt werden.
+* **Rich UX:** Interaktives Fehlerprotokoll für nahtloses Debugging, animierter Splash-Screen und auditives Benutzerfeedback (UI-Sounds).
+
+---
+
+## 🛠️ Technische Architektur & Sicherheit
+
+YIS wurde nach dem Prinzip des *Zero-Knowledge-Hostings* für API-Endpunkte entworfen:
+
+| Sicherheitskomponente | Mechanismus | Zweck |
+| :--- | :--- | :--- |
+| **Transportsicherheit** | `shield.js` (AES-256-GCM) | Die Google Web-App-URL wird kryptografisch verschlüsselt im Build hinterlegt und erst nach erfolgreicher Client-Authentifizierung im Speicher entschlüsselt. |
+| **API-Schutz** | Statischer Token-Abgleich | Schreib- und Upload-Aktionen (`list`, `write`, `upload`) erfordern einen kryptografischen Token, der synchron in `App.gs` und der Client-Konfiguration hinterlegt ist. |
+| **Public Read** | Validierte Parameter-Abfrage | Der unschätzbare, öffentliche Lesezugriff erlaubt ausschließlich isolierte Abfragen via exakter Seriennummer (`get?sn=...`). |
+
+---
+
+## 💻 Schnellstart (Eigene Instanz aufsetzen)
+
+### Voraussetzungen
+* Node.js & npm (für den Build-Prozess)
+* Ein Google-Konto (für Google Sheets & Apps Script)
+
+### Installationsschritte
 ```bash
-git clone <dein-repo-url>
-cd yis   # oder dein Klon-Ordnername
-npm run setup          # *.example → lokale Config
-# token.txt, url.txt, Bereitstellungs-ID.txt + App.gs ausfüllen (siehe SETUP.md)
+# 1. Repository klonen
+git clone [https://github.com/EastGermanCrusader/YIS-Your_Inventory_System.git](https://github.com/EastGermanCrusader/YIS-Your_Inventory_System.git)
+cd YIS-Your_Inventory_System
+
+# 2. Lokale Konfigurationsdateien aus Vorlagen generieren
+npm run setup
+
+# 3. Umgebungsvariablen konfigurieren
+# Befülle die neu erstellten Dateien (token.txt, url.txt, Bereitstellungs-ID.txt) 
+# sowie google-apps-script/App.gs gemäß der SETUP.md.
+
+# 4. Produktion-Build erstellen (Generiert die verschlüsselte shield.js)
 npm run build
-./serve.sh             # http://127.0.0.1:8080
-```
 
-**Ausführliche Anleitung:** [SETUP.md](SETUP.md)
-
-## Projektstruktur
-
-| Pfad | Zweck |
-|------|--------|
-| **`deploy/`** | Statische Website für GitHub Pages |
-| `js/app.js` | Frontend-Quellcode (Entwicklung) |
-| `google-apps-script/App.gs` | Backend (in Google deployen) |
-| `tools/` | Build & Konfiguration |
-| `*.example` | Vorlagen ohne Geheimnisse |
-| `token.txt`, `url.txt`, … | **Lokal**, in `.gitignore` |
-
-## GitHub Pages
-
-Der Ordner **`deploy/`** enthält die komplette Website **und** die Dokumentation (`README.md`, `LICENSE`, `SETUP.md`, `SECURITY.md`).
-
-1. Repository pushen (`npm run check-secrets` vorher empfohlen)
-2. **Settings → Pages → Ordner `/deploy`**
-3. Dokumentation nach `deploy/` aktualisieren: `npm run sync-deploy` (läuft auch bei `npm run build`)
-4. Für **deine** Instanz lokal: `npm run build` – gebaute `shield.js` nicht committen
-
-Generiertes `deploy/js/shield.js` enthält verschlüsselte URLs — standardmäßig **nicht** committen. Jeder Betreiber baut seine eigene `shield.js`.
-
-## Sicherheit
-
-| Ebene | Beschreibung |
-|--------|----------------|
-| **Token** | Schützt `list`, Schreiben, Uploads (`token.txt` = `App.gs`) |
-| **Öffentlich** | Nur `get?sn=…` und Dateiabruf mit Seriennummer |
-| **shield.js** | API-URL AES-256-GCM; Entschlüsselung nach Login |
-
-**Niemals** `token.txt`, `url.txt` oder ein gebautes `shield.js` mit echten Werten ins öffentliche Repo legen.
-
-## Lizenz
-
-[MIT](LICENSE) — freie Nutzung, Änderung und Weitergabe. Keine Gewährleistung.
-
-## Beitragen
-
-Forks und Pull Requests willkommen. Bitte keine echten Tokens, URLs oder Keys in Commits.
+# 5. Lokalen Entwicklungsserver starten
+./serve.sh
