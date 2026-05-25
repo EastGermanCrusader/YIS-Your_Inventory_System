@@ -1,8 +1,11 @@
 /**
- * YIS (Your Inventory System) – Google Apps Script Backend
- * Neu bereitstellen nach jeder Änderung (Web-App, Zugriff: „Jeder“)
+ * YIS – Your Inventory System
+ * Google Apps Script Backend
+ *
+ * Nach jeder Änderung: Web-App neu bereitstellen (Zugriff: „Jeder“).
+ * MEIN_GEHEIMER_TOKEN muss mit token.txt im Repository-Root übereinstimmen.
  */
-/** Gleicher Wert wie in token.txt (Root) – vor Bereitstellung anpassen */
+/** Gleicher Wert wie in token.txt — vor der Bereitstellung anpassen */
 var MEIN_GEHEIMER_TOKEN = 'DEIN_GEHEIMES_TOKEN_HIER';
 
 var HEADERS = [

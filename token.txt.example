@@ -1,4 +1,4 @@
-# Kopieren nach token.txt und eigenes Geheimnis setzen (empfohlen: min. 24 Zeichen).
-# Muss exakt mit MEIN_GEHEIMER_TOKEN in google-apps-script/App.gs übereinstimmen.
-# Dieses Passwort ist auch das Login-Passwort in der Bearbeitungsansicht.
+# Kopieren nach token.txt (npm run setup) und eigenes Geheimnis setzen.
+# Mindestens 24 Zeichen, zufällig. Muss exakt mit MEIN_GEHEIMER_TOKEN in App.gs übereinstimmen.
+# Gleichzeitig Login-Passwort der Bearbeitungsansicht.
 DEIN_GEHEIMES_TOKEN_HIER

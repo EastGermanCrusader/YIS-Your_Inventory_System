@@ -1,3 +1,6 @@
+# Komplette lokale Arbeitskopie (Geheimnisse, gebautes shield.js)
+privat/
+
 # Geheimnisse – niemals auf GitHub pushen
 Key.txt
 token.txt
@@ -11,6 +14,10 @@ anurati-free-font.zip
 L-W_Monogramm.jpg
 logo.png
 fonts/
+
+# Demo-Rohmaterial (nicht für GitHub)
+*.mov
+demo+sounds.mov
 
 # Build / System
 node_modules/

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Kopiert Projekt-Dokumentation nach deploy/ (für GitHub-Upload).
+ * Kopiert Projekt-Dokumentation nach deploy/ (für GitHub Pages).
  */
 const fs = require('fs');
 const path = require('path');
@@ -21,7 +21,6 @@ COPY.forEach(function (name) {
   console.log('Kopiert:', name, '→ deploy/');
 });
 
-const readmeSrc = path.join(ROOT, 'README.md');
 const pagesBlock = `
 
 ---
@@ -32,25 +31,24 @@ Dieser Ordner ist die **statische Website** für GitHub Pages.
 
 | Datei / Ordner | Zweck |
 |----------------|--------|
-| \`index.html\` | Einstieg |
+| \`index.html\` | Einstiegspunkt der Anwendung |
+| \`demo.gif\` | Demo-Aufnahme der Oberfläche |
 | \`.nojekyll\` | Jekyll auf Pages deaktivieren |
 | \`LICENSE\` | MIT-Lizenz |
-| \`SETUP.md\` | Einrichtung eigener Instanz |
+| \`SETUP.md\` | Einrichtung einer eigenen Instanz |
 | \`SECURITY.md\` | Sicherheitshinweise |
-| \`css/\`, \`js/\`, \`fonts/\` | Frontend |
-| \`*.mp3\`, \`L-W_Monogramm_n.b.png\` | Assets |
+| \`css/\`, \`js/\` | Frontend-Assets |
+| \`*.mp3\`, \`preview_Logo.png\` | Audio und Logo |
 
 **Pages-Einstellung:** Branch \`main\`, Ordner **\`/deploy\`**.
 
-\`js/shield.js\` hier ist ein **Platzhalter**. Für deine API lokal im Repo-Root: \`npm run build\` (gebaute Version nicht committen).
+\`js/shield.js\` ist ein **Platzhalter**. Für deine API im Repository-Root: \`npm run build\` (konfigurierte Version nicht committen).
 `;
 
+const readmeSrc = path.join(ROOT, 'README.md');
 if (fs.existsSync(readmeSrc)) {
   var readme = fs.readFileSync(readmeSrc, 'utf8');
-  readme = readme.replace(
-    /Alles für die Website liegt in \*\*`deploy\/`\*\* \(siehe \[deploy\/README\.md\]\(deploy\/README\.md\) mit Upload-Checkliste\)\.\n\n/,
-    ''
-  );
+  readme = readme.replace(/deploy\/demo\.gif/g, 'demo.gif');
   fs.writeFileSync(path.join(DEPLOY, 'README.md'), readme.trim() + pagesBlock);
   console.log('Erstellt: deploy/README.md');
 }

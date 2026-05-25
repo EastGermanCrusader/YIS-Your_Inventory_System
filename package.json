@@ -1,10 +1,18 @@
 {
-  "name": "yis",
+  "name": "yis-your-inventory-system",
+  "version": "1.0.0",
+  "description": "YIS – Your Inventory System: Open-Source-Inventar mit Google Tabellen und Apps Script",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EastGermanCrusader/YIS-Your_Inventory_System.git"
+  },
+  "license": "MIT",
   "scripts": {
     "setup": "node tools/setup-config.js",
     "build": "node tools/sync-deploy-docs.js && node tools/build-shield.js && node tools/build-app.js",
     "sync-deploy": "node tools/sync-deploy-docs.js",
+    "sync-privat": "node tools/sync-privat.js",
     "shield": "node tools/build-shield.js",
     "check-secrets": "node tools/check-no-secrets.js"
   }

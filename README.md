@@ -1,58 +1,161 @@
+English Version below
+
 # YIS – Your Inventory System
 
+Open-Source-**Inventarsystem** mit statischem Web-Frontend, Google Tabellen als Datenbank und [Google Apps Script](https://developers.google.com/apps-script) als API — ohne eigenen Server.
+
+![Demo der YIS-Oberfläche](deploy/demo.gif)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![Plattform](https://img.shields.io/badge/Plattform-Web-orange.svg)
-![Backend](https://img.shields.io/badge/Backend-Google%20Sheets-green.svg)
 
-YIS ist ein leichtgewichtiges, webbasiertes **Inventar- und Lagersystem**, das maximale Flexibilität mit minimalem Infrastruktur-Aufwand kombiniert. Es nutzt ein modernes HTML5/JS-Frontend und verwendet eine **Google Tabelle als serverlose, kostenlose Datenbank**. Die Kommunikation erfolgt sicher über eine maßgeschneiderte Google Apps Script API.
+## Funktionen
 
-![YIS System Demonstration](demo.gif)
+| Bereich | Beschreibung |
+|--------|----------------|
+| **Öffentliche Ansicht** | Akte per QR-Code oder Link `?sn=SERIENNUMMER` — ohne Anmeldung |
+| **Bearbeitung** | Inventar pflegen, Seriennummern (`YIS-YYYYMMDD-0001`), QR-Codes — mit Passwort |
+| **Anlagen** | Dateien pro Akte (bis 1,5 MB), gespeichert im Tabellenblatt „Anlagen“ |
+| **Oberfläche** | Splash-Screen, UI-Sounds, integriertes Fehlerprotokoll |
 
----
+## Schnellstart
 
-## 🚀 Kernfunktionen
-
-* **Öffentliche Schnellansicht (Scan & Go):** Direkter Aufruf digitaler Objektakten via QR-Code oder dedizierter URL-Parameter (`?sn=SERIENNUMMER`) – komplett ohne vorherigen Login.
-* **Autonomes Daten-Seeding:** Das Frontend initialisiert und strukturiert die Google Tabelle beim ersten Start vollautomatisch. Es sind keine manuellen SQL- oder Tabellen-Setups nötig.
-* **Sichere Verwaltung:** Passwortgeschützter Administrationsbereich zur Pflege des Inventars, Generierung standardisierter Seriennummern (`YIS-YYYYMMDD-0001`) und Erstellung von QR-Codes.
-* **Integrierte Dateianlagen:** Direkter Upload von Dokumenten oder Bildern (bis zu 1,5 MB) pro Objekt, die isoliert im Tabellenblatt „Anlagen“ hinterlegt werden.
-* **Rich UX:** Interaktives Fehlerprotokoll für nahtloses Debugging, animierter Splash-Screen und auditives Benutzerfeedback (UI-Sounds).
-
----
-
-## 🛠️ Technische Architektur & Sicherheit
-
-YIS wurde nach dem Prinzip des *Zero-Knowledge-Hostings* für API-Endpunkte entworfen:
-
-| Sicherheitskomponente | Mechanismus | Zweck |
-| :--- | :--- | :--- |
-| **Transportsicherheit** | `shield.js` (AES-256-GCM) | Die Google Web-App-URL wird kryptografisch verschlüsselt im Build hinterlegt und erst nach erfolgreicher Client-Authentifizierung im Speicher entschlüsselt. |
-| **API-Schutz** | Statischer Token-Abgleich | Schreib- und Upload-Aktionen (`list`, `write`, `upload`) erfordern einen kryptografischen Token, der synchron in `App.gs` und der Client-Konfiguration hinterlegt ist. |
-| **Public Read** | Validierte Parameter-Abfrage | Der unschätzbare, öffentliche Lesezugriff erlaubt ausschließlich isolierte Abfragen via exakter Seriennummer (`get?sn=...`). |
-
----
-
-## 💻 Schnellstart (Eigene Instanz aufsetzen)
-
-### Voraussetzungen
-* Node.js & npm (für den Build-Prozess)
-* Ein Google-Konto (für Google Sheets & Apps Script)
-
-### Installationsschritte
 ```bash
-# 1. Repository klonen
-git clone [https://github.com/EastGermanCrusader/YIS-Your_Inventory_System.git](https://github.com/EastGermanCrusader/YIS-Your_Inventory_System.git)
+git clone https://github.com/EastGermanCrusader/YIS-Your_Inventory_System.git
 cd YIS-Your_Inventory_System
-
-# 2. Lokale Konfigurationsdateien aus Vorlagen generieren
 npm run setup
-
-# 3. Umgebungsvariablen konfigurieren
-# Befülle die neu erstellten Dateien (token.txt, url.txt, Bereitstellungs-ID.txt) 
-# sowie google-apps-script/App.gs gemäß der SETUP.md.
-
-# 4. Produktion-Build erstellen (Generiert die verschlüsselte shield.js)
+# token.txt, url.txt, Bereitstellungs-ID.txt und App.gs ausfüllen — siehe SETUP.md
 npm run build
-
-# 5. Lokalen Entwicklungsserver starten
 ./serve.sh
+```
+
+Browser: **http://127.0.0.1:8080** (nicht per `file://` öffnen).
+
+**Lokale Arbeitskopie mit Geheimnissen:** Ordner `privat/` (wird nicht auf GitHub gepusht). Einrichtung: `npm run sync-privat`, dann `cd privat && ./serve.sh`.
+
+**Ausführliche Anleitung:** [SETUP.md](SETUP.md)
+
+## Projektstruktur
+
+| Pfad | Zweck |
+|------|--------|
+| `deploy/` | Statische Website für [GitHub Pages](https://pages.github.com/) |
+| `deploy/demo.gif` | Demo-Aufnahme der Anwendung |
+| `js/app.js` | Frontend-Quellcode (Entwicklung) |
+| `google-apps-script/App.gs` | Backend (in Google bereitstellen) |
+| `tools/` | Build und Konfiguration |
+| `*.example` | Vorlagen ohne Geheimnisse |
+| `token.txt`, `url.txt`, … | **Nur lokal** — in `.gitignore` |
+
+## GitHub Pages
+
+Der Ordner **`deploy/`** enthält die komplette Website sowie die Dokumentation (`README.md`, `LICENSE`, `SETUP.md`, `SECURITY.md`).
+
+1. Vor dem Push: `npm run check-secrets`
+2. Repository pushen
+3. **Settings → Pages → Branch `main`, Ordner `/deploy`**
+4. Dokumentation aktualisieren: `npm run sync-deploy` (läuft auch bei `npm run build`)
+5. Eigene Instanz: `npm run build` lokal — gebaute `shield.js` mit echten Werten **nicht** committen
+
+`deploy/js/shield.js` enthält nach dem Build eine verschlüsselte API-URL (AES-256-GCM). Im Repository liegt standardmäßig nur ein Platzhalter; jede Installation baut ihre eigene Version.
+
+## Sicherheit
+
+| Ebene | Beschreibung |
+|--------|----------------|
+| **Token** | Schützt `list`, Schreibvorgänge und Uploads (`token.txt` = `App.gs`) |
+| **Öffentlich** | Nur `get?sn=…` und Dateiabruf mit gültiger Seriennummer |
+| **shield.js** | API-URL verschlüsselt; Entschlüsselung nach Anmeldung |
+
+Details: [SECURITY.md](SECURITY.md)
+
+**Niemals** `token.txt`, `url.txt`, `Key.txt` oder ein konfiguriertes `shield.js` ins öffentliche Repository legen.
+
+## Lizenz
+
+[MIT](LICENSE) — freie Nutzung, Änderung und Weitergabe. Keine Gewährleistung.
+
+## Beitragen
+
+Forks und Pull Requests sind willkommen. Bitte keine echten Tokens, URLs oder Schlüssel in Commits.
+
+---
+
+# English
+
+# YIS – Your Inventory System
+
+Open-source **inventory management** with a static web frontend, Google Sheets as the database, and [Google Apps Script](https://developers.google.com/apps-script) as the API — no dedicated server required.
+
+![YIS application demo](deploy/demo.gif)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+## Features
+
+| Area | Description |
+|------|-------------|
+| **Public view** | Access records via QR code or link `?sn=SERIAL_NUMBER` — no login |
+| **Edit mode** | Manage inventory, serial numbers (`YIS-YYYYMMDD-0001`), QR codes — password protected |
+| **Attachments** | Files per record (up to 1.5 MB), stored in the „Anlagen“ sheet |
+| **UI** | Splash screen, UI sounds, built-in error log |
+
+## Quick start
+
+```bash
+git clone https://github.com/EastGermanCrusader/YIS-Your_Inventory_System.git
+cd YIS-Your_Inventory_System
+npm run setup
+# Fill in token.txt, url.txt, Bereitstellungs-ID.txt and App.gs — see SETUP.md
+npm run build
+./serve.sh
+```
+
+Open **http://127.0.0.1:8080** in your browser (do not use `file://`).
+
+**Local copy with secrets:** use the `privat/` folder (not pushed to GitHub). Run `npm run sync-privat`, then `cd privat && ./serve.sh`.
+
+**Full setup guide:** [SETUP.md](SETUP.md)
+
+## Project structure
+
+| Path | Purpose |
+|------|---------|
+| `deploy/` | Static site for [GitHub Pages](https://pages.github.com/) |
+| `deploy/demo.gif` | Application demo recording |
+| `js/app.js` | Frontend source (development) |
+| `google-apps-script/App.gs` | Backend (deploy in Google) |
+| `tools/` | Build and configuration |
+| `*.example` | Templates without secrets |
+| `token.txt`, `url.txt`, … | **Local only** — listed in `.gitignore` |
+
+## GitHub Pages
+
+The **`deploy/`** folder contains the full website and documentation (`README.md`, `LICENSE`, `SETUP.md`, `SECURITY.md`).
+
+1. Before pushing: `npm run check-secrets`
+2. Push the repository
+3. **Settings → Pages → Branch `main`, folder `/deploy`**
+4. Refresh docs in deploy: `npm run sync-deploy` (also runs on `npm run build`)
+5. For your instance: run `npm run build` locally — do **not** commit a configured `shield.js`
+
+After build, `deploy/js/shield.js` holds an encrypted API URL (AES-256-GCM). The public repo ships a placeholder; each operator builds their own file.
+
+## Security
+
+| Layer | Description |
+|-------|-------------|
+| **Token** | Protects `list`, writes, and uploads (`token.txt` = `App.gs`) |
+| **Public** | Only `get?sn=…` and file access with a valid serial number |
+| **shield.js** | Encrypted API URL; decrypted after login |
+
+Details: [SECURITY.md](SECURITY.md)
+
+Never commit `token.txt`, `url.txt`, `Key.txt`, or a configured `shield.js` to a public repository.
+
+## License
+
+[MIT](LICENSE) — use, modify, and distribute freely. No warranty.
+
+## Contributing
+
+Forks and pull requests are welcome. Do not include real tokens, URLs, or keys in commits.
